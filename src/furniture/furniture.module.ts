@@ -13,5 +13,6 @@ import { FurnitureService } from './furniture.service';
   ],
   controllers: [FurnitureController],
   providers: [FurnitureService, FurnitureRepository],
+  exports: [MongooseModule],
 })
 export class FurnitureModule {}

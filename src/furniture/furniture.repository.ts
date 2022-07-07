@@ -22,6 +22,8 @@ export class FurnitureRepository {
   }
 
   async getFurnitureById(id: string): Promise<FurnitureDocument> {
+    console.log(id);
+
     const furniture = await this.furnitureModel.findById(id);
     if (!furniture)
       throw new NotFoundException(`the furniture with id: ${id} was not found`);
@@ -46,6 +48,7 @@ export class FurnitureRepository {
     const modifiedFurniture = await this.furnitureModel.findByIdAndUpdate(
       id,
       modifyFurnitureDto,
+      { new: true },
     );
 
     if (!modifiedFurniture) {
@@ -54,6 +57,6 @@ export class FurnitureRepository {
       );
     } else {
     }
-    return this.getFurnitureById(id);
+    return modifiedFurniture;
   }
 }
