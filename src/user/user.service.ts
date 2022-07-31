@@ -1,4 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
+
+import { LoginCredentials } from '../auth/dto/login-credentials.dto';
 import { Address } from './address.schema';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UserRepository } from './user.repository';
@@ -32,5 +34,9 @@ export class UserService {
 
   deleteUserById(id: string): Promise<void> {
     return this.userRepository.deleteUserById(id);
+  }
+
+  getUserByEmail(loginCreds: LoginCredentials) {
+    return this.userRepository.getUserByEmail(loginCreds);
   }
 }

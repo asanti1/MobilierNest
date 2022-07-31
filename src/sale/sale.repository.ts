@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectConnection, InjectModel } from '@nestjs/mongoose';
-import { Model, Connection } from 'mongoose';
+import { Connection, Model } from 'mongoose';
 
 import { Furniture, FurnitureDocument } from '../furniture/furniture.schema';
 import { InsufficientStockException } from './exceptions/insufficient-stock.exception';
@@ -51,7 +51,7 @@ export class SaleRepository {
     await session.endSession();
 
     return await this.saleModel.create({
-      customer: userId,
+      userId: userId,
       shopList: shopList,
     });
   }

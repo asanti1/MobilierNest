@@ -1,16 +1,23 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { InjectConnection, InjectModel } from '@nestjs/mongoose';
+import { Connection, Model } from 'mongoose';
+
+import { LoginCredentials } from '../auth/dto/login-credentials.dto';
+import { Role } from '../auth/interfaces/roles.enum';
 import { Address } from './address.schema';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User, UserDocument } from './user.schema';
 
 @Injectable()
 export class UserRepository {
-  constructor(@InjectModel(User.name) private userModel: Model<UserDocument>) {}
+  constructor(
+    @InjectModel(User.name) private userModel: Model<UserDocument>,
+    @InjectConnection() private connection: Connection,
+  ) {}
 
   async createUser(user: User): Promise<UserDocument> {
     const createdUser = new this.userModel(user);
+    createdUser.roles = [Role.ADMIN];
     return await createdUser.save();
   }
 
@@ -21,10 +28,9 @@ export class UserRepository {
   }
 
   async getUserById(id: string): Promise<UserDocument> {
-    const user = await this.userModel.findById(id);
-    if (!user) throw new NotFoundException(`user with id of: ${id} not found`);
+    const findUser = await this.userModel.findById(id);
 
-    return user;
+    return findUser;
   }
 
   async modifiyAUserById(
@@ -40,13 +46,11 @@ export class UserRepository {
   }
 
   async addAnAddress(id: string, address: Address): Promise<UserDocument> {
-    const user = await this.userModel.findByIdAndUpdate(
-      id,
-      { $push: { address } },
-      { new: true },
-    );
-    if (!user) throw new NotFoundException(`user with id of: ${id} not found`);
-    return user;
+    const userFound = await this.userModel.findById(id);
+
+    userFound.address.push(address);
+
+    return await userFound.save();
   }
 
   async deleteUserById(id: string): Promise<void> {
@@ -55,5 +59,10 @@ export class UserRepository {
       throw new NotFoundException(`user with id of: ${id} not found`);
     }
     return;
+  }
+
+  async getUserByEmail({ email }: LoginCredentials) {
+    const user = await this.userModel.findOne({ email });
+    return user;
   }
 }

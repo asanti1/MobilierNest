@@ -11,6 +11,10 @@ import {
   Put,
 } from '@nestjs/common';
 
+import { AuthWithSameIdChecker } from '../auth/decorators/auth-with-same-id-checker.decorator';
+import { Auth } from '../auth/decorators/auth.decorator';
+import { GetUser } from '../auth/decorators/get-user.decorator';
+import { Role } from '../auth/interfaces/roles.enum';
 import { ParseObjectIdPipe } from '../pipes/string-to-objectid.pipe';
 import { Address } from './address.schema';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -22,16 +26,19 @@ export class UserController {
   constructor(private userService: UserService) {}
 
   @Post()
+  @Auth(Role.ADMIN)
   createUser(@Body() user: User): Promise<UserDocument> {
     return this.userService.createUser(user);
   }
 
   @Get()
+  @Auth(Role.ADMIN)
   getUsers(): Promise<UserDocument[]> {
     return this.userService.getUsers();
   }
 
   @Get('/:id')
+  @AuthWithSameIdChecker(Role.ADMIN, Role.USER)
   getUserById(
     @Param('id', new ParseObjectIdPipe()) id: string,
   ): Promise<UserDocument> {
@@ -39,6 +46,7 @@ export class UserController {
   }
 
   @Patch('/:id')
+  @AuthWithSameIdChecker(Role.ADMIN, Role.USER)
   modifiyAUserById(
     @Param('id', new ParseObjectIdPipe()) id: string,
     @Body() user: UpdateUserDto,
@@ -47,6 +55,7 @@ export class UserController {
   }
 
   @Put('/:id')
+  @AuthWithSameIdChecker(Role.ADMIN, Role.USER)
   addAnAddress(
     @Param('id', new ParseObjectIdPipe()) id: string,
     @Body() address: Address,
@@ -56,6 +65,7 @@ export class UserController {
 
   @HttpCode(HttpStatus.NO_CONTENT)
   @Delete('/:id')
+  @Auth(Role.ADMIN)
   deleteUserById(
     @Param('id', new ParseObjectIdPipe()) id: string,
   ): Promise<void> {

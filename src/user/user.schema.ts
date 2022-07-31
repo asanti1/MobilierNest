@@ -1,5 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { IsEmail, IsNotEmpty, IsOptional } from 'class-validator';
+import { Role } from '../auth/interfaces/roles.enum';
 import { Address } from './address.schema';
 
 export type UserDocument = Document & User;
@@ -28,6 +29,10 @@ export class User {
   @Prop({ required: false })
   @IsOptional()
   address?: Address[];
+
+  @Prop({ required: false })
+  @IsOptional()
+  roles: Role[];
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

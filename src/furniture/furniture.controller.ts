@@ -9,6 +9,8 @@ import {
   Patch,
   Post,
 } from '@nestjs/common';
+import { Auth } from '../auth/decorators/auth.decorator';
+import { Role } from '../auth/interfaces/roles.enum';
 
 import { ParseObjectIdPipe } from '../pipes/string-to-objectid.pipe';
 import { ModifyFurnitureDto } from './dto/modify-furniture.dto';
@@ -25,6 +27,7 @@ export class FurnitureController {
   }
 
   @Post()
+  @Auth(Role.ADMIN)
   createFurnitures(@Body() furniture: Furniture): Promise<FurnitureDocument> {
     return this.furnitureService.createFurnitures(furniture);
   }
@@ -36,6 +39,7 @@ export class FurnitureController {
     return this.furnitureService.getFurnitureById(id);
   }
 
+  @Auth(Role.ADMIN)
   @HttpCode(HttpStatus.NO_CONTENT)
   @Delete('/:id')
   deleteFurnitureById(
@@ -44,6 +48,7 @@ export class FurnitureController {
     return this.furnitureService.deleteFurnitureById(id);
   }
 
+  @Auth(Role.ADMIN)
   @Patch('/:id')
   modifyFurnitureById(
     @Param('id', new ParseObjectIdPipe()) id: string,
