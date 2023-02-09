@@ -18,7 +18,7 @@ export class AuthRepository {
     return user;
   }
 
-  async register(user: User): Promise<void> {
+  async register(user: User): Promise<User> {
     const salt = await bcrypt.genSalt();
 
     const hashedPassword = await bcrypt.hash(user.password, salt);
@@ -27,6 +27,6 @@ export class AuthRepository {
 
     const userToBeCreated = await this.userModel.create(user);
     userToBeCreated.roles = [Role.USER];
-    await userToBeCreated.save();
+    return await userToBeCreated.save();
   }
 }

@@ -2,6 +2,7 @@ import { Inject, Injectable } from '@nestjs/common';
 
 import { LoginCredentials } from '../auth/dto/login-credentials.dto';
 import { Address } from './address.schema';
+import { ModifyAddressDto } from './dto/modify-address.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UserRepository } from './user.repository';
 import { User, UserDocument } from './user.schema';
@@ -38,5 +39,13 @@ export class UserService {
 
   getUserByEmail(loginCreds: LoginCredentials) {
     return this.userRepository.getUserByEmail(loginCreds);
+  }
+
+  modifyAnAddressById(id: string, address: ModifyAddressDto): Promise<void> {
+    return this.userRepository.modifyAnAddressById(id, address);
+  }
+
+  deleteAddressById(id: string, addressId: string): Promise<void> {
+    return this.userRepository.deleteAddressById(id, addressId);
   }
 }

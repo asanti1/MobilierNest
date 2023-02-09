@@ -22,13 +22,6 @@ export class IdMatchesGuard implements CanActivate {
     const user = req.user;
 
     const { id } = req.params;
-
-    console.log(id);
-
-    console.log(user);
-
-    console.log(validRoles.some((role) => Role.ADMIN === role));
-
     if (
       req.params.id !== user.id &&
       !validRoles.some((role) => Role.ADMIN === role)

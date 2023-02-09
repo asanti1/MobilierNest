@@ -1,4 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common';
+import { GetFurnitureDto } from './dto/get-furniture.dto';
 
 import { ModifyFurnitureDto } from './dto/modify-furniture.dto';
 import { FurnitureRepository } from './furniture.repository';
@@ -11,8 +12,8 @@ export class FurnitureService {
     private readonly furnitureRepository: FurnitureRepository,
   ) {}
 
-  getFurnitures(): Promise<FurnitureDocument[]> {
-    return this.furnitureRepository.getFurnitures();
+  getFurnitures(skip: number): Promise<GetFurnitureDto> {
+    return this.furnitureRepository.getFurnitures(skip);
   }
 
   createFurnitures(furniture: Furniture): Promise<FurnitureDocument> {
@@ -32,5 +33,9 @@ export class FurnitureService {
     modifyFurnitureDto: ModifyFurnitureDto,
   ): Promise<FurnitureDocument> {
     return this.furnitureRepository.modifyFurnitureById(id, modifyFurnitureDto);
+  }
+
+  getFurnituresByName(search: string): Promise<GetFurnitureDto> {
+    return this.furnitureRepository.getFurnituresByName(search);
   }
 }

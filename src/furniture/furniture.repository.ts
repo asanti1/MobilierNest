@@ -1,6 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
+import { GetFurnitureDto } from './dto/get-furniture.dto';
 
 import { ModifyFurnitureDto } from './dto/modify-furniture.dto';
 import { Furniture, FurnitureDocument } from './furniture.schema';
@@ -12,8 +13,23 @@ export class FurnitureRepository {
     private furnitureModel: Model<FurnitureDocument>,
   ) {}
 
-  async getFurnitures(): Promise<FurnitureDocument[]> {
-    return await this.furnitureModel.find();
+  async getFurnitures(skip: number): Promise<GetFurnitureDto> {
+    const furnitures = await this.furnitureModel.find().skip(skip).limit(8);
+    const total = await this.furnitureModel.countDocuments();
+    return {
+      furnitures,
+      total,
+    };
+  }
+
+  async getFurnituresByName(search: string): Promise<GetFurnitureDto> {
+    const furniture = await this.furnitureModel.find({
+      name: { $regex: search, $options: 'i' },
+    });
+
+    const total = furniture.length;
+
+    return { furnitures: furniture, total: total };
   }
 
   async createFurnitures(furniture: Furniture): Promise<FurnitureDocument> {
@@ -22,8 +38,6 @@ export class FurnitureRepository {
   }
 
   async getFurnitureById(id: string): Promise<FurnitureDocument> {
-    console.log(id);
-
     const furniture = await this.furnitureModel.findById(id);
     if (!furniture)
       throw new NotFoundException(`the furniture with id: ${id} was not found`);

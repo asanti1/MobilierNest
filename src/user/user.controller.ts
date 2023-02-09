@@ -13,10 +13,11 @@ import {
 
 import { AuthWithSameIdChecker } from '../auth/decorators/auth-with-same-id-checker.decorator';
 import { Auth } from '../auth/decorators/auth.decorator';
-import { GetUser } from '../auth/decorators/get-user.decorator';
 import { Role } from '../auth/interfaces/roles.enum';
 import { ParseObjectIdPipe } from '../pipes/string-to-objectid.pipe';
 import { Address } from './address.schema';
+import { DeleteAddressDto } from './dto/delete-address.dto';
+import { ModifyAddressDto } from './dto/modify-address.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User, UserDocument } from './user.schema';
 import { UserService } from './user.service';
@@ -64,11 +65,31 @@ export class UserController {
   }
 
   @HttpCode(HttpStatus.NO_CONTENT)
+  @Put('address/:id')
+  @AuthWithSameIdChecker(Role.ADMIN, Role.USER)
+  modifyAnAddressById(
+    @Param('id', new ParseObjectIdPipe()) id: string,
+    @Body() address: ModifyAddressDto,
+  ): Promise<void> {
+    return this.userService.modifyAnAddressById(id, address);
+  }
+
+  @HttpCode(HttpStatus.NO_CONTENT)
   @Delete('/:id')
   @Auth(Role.ADMIN)
   deleteUserById(
     @Param('id', new ParseObjectIdPipe()) id: string,
   ): Promise<void> {
     return this.userService.deleteUserById(id);
+  }
+
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @Delete('address/:id/:addressId')
+  @AuthWithSameIdChecker(Role.ADMIN, Role.USER)
+  deleteAddressById(
+    @Param('id', new ParseObjectIdPipe()) id: string,
+    @Param('addressId') addressId: string,
+  ): Promise<void> {
+    return this.userService.deleteAddressById(id, addressId);
   }
 }

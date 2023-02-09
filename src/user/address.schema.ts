@@ -1,6 +1,10 @@
 import { IsOptional, IsString } from 'class-validator';
 
 export class Address {
+  @IsString()
+  @IsOptional()
+  addressId?: string;
+
   @IsOptional()
   @IsString()
   country?: string;

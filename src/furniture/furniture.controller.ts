@@ -13,6 +13,7 @@ import { Auth } from '../auth/decorators/auth.decorator';
 import { Role } from '../auth/interfaces/roles.enum';
 
 import { ParseObjectIdPipe } from '../pipes/string-to-objectid.pipe';
+import { GetFurnitureDto } from './dto/get-furniture.dto';
 import { ModifyFurnitureDto } from './dto/modify-furniture.dto';
 import { Furniture, FurnitureDocument } from './furniture.schema';
 import { FurnitureService } from './furniture.service';
@@ -21,9 +22,9 @@ import { FurnitureService } from './furniture.service';
 export class FurnitureController {
   constructor(private furnitureService: FurnitureService) {}
 
-  @Get()
-  getFurnitures(): Promise<FurnitureDocument[]> {
-    return this.furnitureService.getFurnitures();
+  @Get('/:skip')
+  getFurnitures(@Param('skip') skip: number): Promise<GetFurnitureDto> {
+    return this.furnitureService.getFurnitures(skip);
   }
 
   @Post()
@@ -55,5 +56,12 @@ export class FurnitureController {
     @Body() modifyFurnitureDto: ModifyFurnitureDto,
   ): Promise<FurnitureDocument> {
     return this.furnitureService.modifyFurnitureById(id, modifyFurnitureDto);
+  }
+
+  @Get('/byName/:search')
+  getFurnituresByName(
+    @Param('search') search: string,
+  ): Promise<GetFurnitureDto> {
+    return this.furnitureService.getFurnituresByName(search);
   }
 }
